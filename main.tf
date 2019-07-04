@@ -1,11 +1,23 @@
+variable "stage" {}
+
 provider "aws" {
   region = "eu-central-1"
 }
+resource "aws_s3_bucket" "example" {
+  bucket = "serverless-data-pipeline-${var.stage}-example"
+  acl    = "private"
 
-resource "aws_instance" "example" {
-  ami           = "ami-0cc293023f983ed53"
-  instance_type = "t2.micro"
   tags = {
-    Name = "terraform-example"
+    Name        = "My bucket"
+    Environment = "Dev"
+    Stage = "${var.stage}"
+  }
+}
+resource "aws_glue_job" "example" {
+  name     = "serverless-data-pipelinep-${var.stage}"
+  role_arn = "arn:aws:iam::077590795309:role/glue-admin"
+
+  command {
+    script_location = "s3://${aws_s3_bucket.example.bucket}/example.py"
   }
 }
