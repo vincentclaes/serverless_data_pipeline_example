@@ -4,9 +4,15 @@ provider:
   name: aws
   runtime: python3.7
   region: eu-central-1
+  stage: ${opt:stage}
+  role: arn:aws:iam::077590795309:role/serverless-data-pipeline-lambda
+
+plugins:
+  - serverless-python-requirements
+  - serverless-s3-remover
 
 custom:
-  bucket: ${self:service}-<add-a-unique-string-here>
+  bucket: ${self:service}-${self:provider.stage}
 
 functions:
   unzip:
@@ -21,7 +27,20 @@ functions:
     environment:
         DEST_BUCKET: ${self:custom.bucket}
         DEST_KEY: unzip/
-        JOB_NAME: unzip
+        JOB_NAME: unzip-${self:provider.stage}
+
+  extract:
+    handler: lambda/extract.handler
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: unzip/
+            - suffix: .eml
+    environment:
+        DEST_BUCKET: ${self:custom.bucket}
+        DEST_KEY: extract/
 
 resources:
   Resources:
@@ -31,10 +50,10 @@ resources:
         Role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
         Command:   
           Name: pythonshell  
-          ScriptLocation: s3://aws-glue-target-serverless-data-pipeline/unzip.py
-        Name: unzip
+          ScriptLocation: s3://aws-glue-target-serverless-data-pipeline-${self:provider.stage}/unzip.py
+        Name: unzip-${self:provider.stage}
     
     S3GlueScripts:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: aws-glue-target-serverless-data-pipeline
+        BucketName: aws-glue-target-serverless-data-pipeline-${self:provider.stage}
