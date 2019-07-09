@@ -2,6 +2,8 @@ import io
 import sys
 import zipfile
 import boto3
+# these libraries are not available via pypi but they are available in the glue environment on aws
+from awsglue.utils import getResolvedOptions
 
 
 def main():

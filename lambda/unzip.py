@@ -1,7 +1,7 @@
 import os
 import boto3
 
-def handle(event, context):
+def handler(event, context):
     source_key = event['Records'][0]['s3']['object']['key']
     source_bucket = event['Records'][0]['s3']['bucket']['name']
     job_name = os.getenv('JOB_NAME')
