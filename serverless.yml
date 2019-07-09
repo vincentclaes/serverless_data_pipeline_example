@@ -1,113 +1,40 @@
-# Welcome to Serverless!
-#
-# This file is the main config file for your service.
-# It's very minimal at this point and uses default values.
-# You can always add more config options for more control.
-# We've included some commented out config examples here.
-# Just uncomment any of them to get that config option.
-#
-# For full config options, check the docs:
-#    docs.serverless.com
-#
-# Happy Coding!
-
-service: serverless-data-pipeline # NOTE: update this with your service name
-
-# You can pin your service to only deploy with a specific Serverless version
-# Check out our docs for more details
-# frameworkVersion: "=X.X.X"
+service: serverless-data-pipeline
 
 provider:
   name: aws
   runtime: python3.7
-
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
-
-# you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
-
-# you can define service wide environment variables here
-#  environment:
-#    variable1: value1
-
-# you can add packaging information here
-#package:
-#  include:
-#    - include-me.py
-#    - include-me-dir/**
-#  exclude:
-#    - exclude-me.py
-#    - exclude-me-dir/**
-
-functions:
-  hello:
-    handler: handler.hello
-
-plugins:
-  - serverless-finch
+  region: eu-central-1
 
 custom:
-  client:
-    bucketName: aws-glue-target-serverless-data-pipeline
-    distributionFolder: glue/
+  bucket: ${self:service}-<add-a-unique-string-here>
 
-# you can add CloudFormation resource templates here
+functions:
+  unzip:
+    handler: lambda/unzip.handler
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: raw/
+            - suffix: .zip
+    environment:
+        DEST_BUCKET: ${self:custom.bucket}
+        DEST_KEY: unzip/
+        JOB_NAME: unzip
+
 resources:
   Resources:
     GlueJob:
       Type: AWS::Glue::Job
       Properties: 
-        Role: !Ref GlueRole
+        Role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
         Command:   
           Name: pythonshell  
-          ScriptLocation: s3://aws-glue-target-serverless-data-pipeline/glue_unzip.py
-              # for access to directories use proper IAM role with permission to buckets and folders that begin with "aws-glue-"					 
-              # script uses temp directory from job definition if required (temp directory not used S3 to S3)
-              # script defines target for output as s3://aws-glue-target/sal
-        ExecutionProperty:   
-          MaxConcurrentRuns: 20 
-        Description: glue job that unzips email messages zip files
+          ScriptLocation: s3://aws-glue-target-serverless-data-pipeline/unzip.py
         Name: unzip
-    GlueRole:
-      Type: AWS::IAM::Role
+    
+    S3GlueScripts:
+      Type: AWS::S3::Bucket
       Properties:
-        AssumeRolePolicyDocument:
-          Version: "2012-10-17"
-          Statement:
-            -
-              Effect: "Allow"
-              Principal:
-                Service:
-                  - "glue.amazonaws.com"
-              Action:
-                - "sts:AssumeRole"
-        Path: "/"
-        Policies:
-          -
-            PolicyName: "root"
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                -
-                  Effect: "Allow"
-                  Action: "*"
-                  Resource: "*"
-    # S3GlueScripts:
-    #   Type: AWS::S3::Bucket
-    #   Properties:
-    #     BucketName: aws-glue-target-serverless-data-pipeline
+        BucketName: aws-glue-target-serverless-data-pipeline
