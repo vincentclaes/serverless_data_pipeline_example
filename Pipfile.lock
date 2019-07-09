@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c1ad04d56815ec8d2b15303d074d206fc39a7171a31b146da5b8e2d0f58742fe"
+            "sha256": "97acdec0215daa5e5726f9a1dd556bb66392e8a51648b691baa0941ef7e86f3b"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,10 +26,10 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:0c6746148ac2c1842e5f0aca4fa542c8696856a3ece83ad9a30331f60a71de3a",
-                "sha256:83faaa9c83f6828e10c507927dc0fe421e4f05309a4a3fe3ccd5a6203a2f501b"
+                "sha256:0d47e674f160f453de7a5b67e9bb12907352d63d0fefabaedfdfbe3b6dc3b657",
+                "sha256:1f76c7586c90ea2b0d43902d8614fb7bb17869b44692286067015d6516bb043d"
             ],
-            "version": "==1.12.184"
+            "version": "==1.12.185"
         },
         "docutils": {
             "hashes": [
@@ -39,33 +39,12 @@
             ],
             "version": "==0.14"
         },
-        "extract-msg": {
-            "hashes": [
-                "sha256:0e733743d4b5b7ca62265d1477d4b99f03e44f3202fa53ee97d54f5b2c75b1b3",
-                "sha256:3746d5f68266740575ef9097516f39c5f601fa031e188cea338a13b66de16ada"
-            ],
-            "index": "pypi",
-            "version": "==0.23.1"
-        },
-        "imapclient": {
-            "hashes": [
-                "sha256:3eeb97b9aa8faab0caa5024d74bfde59408fbd542781246f6960873c7bf0dd01",
-                "sha256:60ba79758cc9f13ec910d7a3df9acaaf2bb6c458720d9a02ec33a41352fd1b99"
-            ],
-            "version": "==2.1.0"
-        },
         "jmespath": {
             "hashes": [
                 "sha256:3720a4b1bd659dd2eecad0666459b9788813e032b83e7ba58578e48254e0a0e6",
                 "sha256:bde2aef6f44302dfb30320115b17d030798de8c4110e28d5cf6cf91a7a31074c"
             ],
             "version": "==0.9.4"
-        },
-        "olefile": {
-            "hashes": [
-                "sha256:133b031eaf8fd2c9399b78b8bc5b8fcbe4c31e85295749bb17a87cba8f3c3964"
-            ],
-            "version": "==0.46"
         },
         "python-dateutil": {
             "hashes": [
@@ -74,13 +53,6 @@
             ],
             "markers": "python_version >= '2.7'",
             "version": "==2.8.0"
-        },
-        "pytz": {
-            "hashes": [
-                "sha256:303879e36b721603cc54604edcac9d20401bdbe31e1e4fdee5b9f98d5d31dfda",
-                "sha256:d747dd3d23d77ef44c6a3526e274af6efeb0a6f1afd5a69ba4d5be4098c8e141"
-            ],
-            "version": "==2019.1"
         },
         "s3transfer": {
             "hashes": [
@@ -95,12 +67,6 @@
                 "sha256:d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
             ],
             "version": "==1.12.0"
-        },
-        "tzlocal": {
-            "hashes": [
-                "sha256:4ebeb848845ac898da6519b9b31879cf13b6626f7184c496037b818e238f2c4e"
-            ],
-            "version": "==1.5.1"
         },
         "urllib3": {
             "hashes": [
