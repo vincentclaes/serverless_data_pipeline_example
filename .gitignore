@@ -20,3 +20,5 @@ var/
 .serverless/
 .terraform/
 node_modules/
+.vscode/
+.idea/
