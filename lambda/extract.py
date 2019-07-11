@@ -11,10 +11,10 @@ def handler(event, context):
     source_bucket = event['Records'][0]['s3']['bucket']['name']
     destination_bucket = os.getenv('DEST_BUCKET')
     destination_key = os.getenv('DEST_KEY')
+    email_name = source_key.split('/')[-1]
     s3_object = boto3.client('s3').get_object(Bucket=source_bucket, Key=source_key)["Body"].read()
-    email_object = extract_message(s3_object)
-    email_name = source_key.split('/')[-1] + '.json'
-    boto3.client('s3').put_object(Body=email_object, Bucket=destination_bucket, Key=destination_key + email_name)
+    email_object = extract_message(s3_object, email_name)
+    boto3.client('s3').put_object(Body=email_object, Bucket=destination_bucket, Key=destination_key + email_name + '.json')
 
 
 def get_address_field_from_email(email_object, field):
@@ -29,9 +29,10 @@ def get_date_field_from_email(email_object):
     return ''
 
 
-def extract_message(message_object):
+def extract_message(message_object, email_name):
     message_byte_object = BytesParser(policy=policy.default).parsebytes(message_object)
     email_object = {
+        'id': email_name,
         'from': get_address_field_from_email(message_byte_object, 'From'),
         'to': get_address_field_from_email(message_byte_object, 'To'),
         'cc': get_address_field_from_email(message_byte_object, 'CC'),
