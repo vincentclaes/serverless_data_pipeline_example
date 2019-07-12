@@ -8,7 +8,6 @@ provider:
   role: arn:aws:iam::077590795309:role/serverless-data-pipeline-lambda
 
 plugins:
-  - serverless-python-requirements
   - serverless-s3-remover
 
 custom:
