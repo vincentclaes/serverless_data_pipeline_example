@@ -2,8 +2,8 @@ service: serverless-data-pipeline
 
 provider:
   name: aws
-  runtime: python3.7
   region: eu-central-1
+  runtime: python3.7
   stage: ${opt:stage}
   role: arn:aws:iam::077590795309:role/serverless-data-pipeline-lambda
 
@@ -69,10 +69,12 @@ resources:
           Name: pythonshell  
           ScriptLocation: s3://${self:custom.bucket_glue_scripts}/unzip.py
         Name: unzip-${self:provider.stage}
+
     S3GlueScripts:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.bucket_glue_scripts}
+
     GlueCrawler:
       Type: AWS::Glue::Crawler
       Properties:
