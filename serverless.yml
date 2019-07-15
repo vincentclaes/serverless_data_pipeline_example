@@ -14,6 +14,7 @@ custom:
   bucket: ${self:service}-${self:provider.stage}
   bucket_glue_scripts: ${self:custom.bucket}-glue-scripts
   glue_crawler: ${self:custom.bucket}-glue-crawler
+  glue_role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
   athena_db: ${self:custom.bucket}
   remover:
     buckets:
@@ -63,7 +64,7 @@ resources:
     GlueJob:
       Type: AWS::Glue::Job
       Properties: 
-        Role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
+        Role: ${self:custom.glue_role}
         Command:   
           Name: pythonshell  
           ScriptLocation: s3://${self:custom.bucket_glue_scripts}/unzip.py
@@ -79,7 +80,7 @@ resources:
       Properties:
         DatabaseName: ${self:custom.athena_db}
         Name: ${self:custom.glue_crawler}
-        Role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
+        Role: ${self:custom.glue_role}
         TablePrefix: messages_
         Targets:
           S3Targets:
