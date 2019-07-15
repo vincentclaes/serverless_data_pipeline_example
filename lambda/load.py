@@ -3,9 +3,15 @@ import boto3
 
 
 def handler(event, context):
-    """trigger the glue crawler that creates a data catalog
-    from the extracted contents of the emails."""
+    """
+    trigger the glue crawler that creates a data catalog
+    from the extracted contents of the emails.
+    """
+    # get glue crawler name from the environment
     job_name = os.getenv('GLUE_CRAWLER')
+
+    # get the state of the glue crawler and start if it's ready,
+    # else do nothing.
     glue_client = boto3.client('glue')
     crawler_metadata = glue_client.get_crawler(Name=job_name)
     crawler_state = crawler_metadata.get('Crawler').get('State')

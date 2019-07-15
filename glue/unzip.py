@@ -7,6 +7,10 @@ from awsglue.utils import getResolvedOptions
 
 
 def main():
+    """
+    get the sources via the arguments that are passed to the glue job,
+    get the zip file from s3, unzip and dump the result to s3.
+    """
     args = getResolvedOptions(sys.argv, ['source_bucket',
                                          'source_key', 'destination_bucket', 'destination_key'])
     print('args parsed : {}'.format(args))

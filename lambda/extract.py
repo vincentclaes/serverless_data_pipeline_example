@@ -8,17 +8,22 @@ import boto3
 
 def handler(event, context):
     """
-    get email object from s3 extract the contents and put the resulting object back to s3.
+    extract the contents from the emails and put the resulting object back to s3.
     """
+    # get the source key and bucket from the event that triggered this lambda function.
     source_key = event['Records'][0]['s3']['object']['key']
     source_bucket = event['Records'][0]['s3']['bucket']['name']
+
+    # get the destination key and bucket from the environment variables
     destination_bucket = os.getenv('DEST_BUCKET')
     destination_key = os.getenv('DEST_KEY')
 
+    # get the email name from the key
     email_name = source_key.split('/')[-1]
 
+    # get email from s3, extract the contents and dump the result back to s3
     s3_object = boto3.client('s3').get_object(Bucket=source_bucket, Key=source_key)["Body"].read()
-    email_object = extract_message(s3_object, email_name)
+    email_object = extract_contents_from_message(s3_object, email_name)
     boto3.client('s3').put_object(Body=email_object, Bucket=destination_bucket,
                                   Key=destination_key + email_name + '.json')
 
@@ -35,7 +40,7 @@ def get_date_field_from_email(email_object):
     return ''
 
 
-def extract_message(message_object, email_name):
+def extract_contents_from_message(message_object, email_name):
     message_byte_object = BytesParser(policy=policy.default).parsebytes(message_object)
     email_object = {
         'id': email_name,
