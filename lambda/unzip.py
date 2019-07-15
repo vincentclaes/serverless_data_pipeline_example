@@ -11,7 +11,7 @@ def handler(event, context):
     source_bucket = event['Records'][0]['s3']['bucket']['name']
 
     # get the destination key and bucket from the environment variables
-    job_name = os.getenv('JOB_NAME')
+    glue_job = os.getenv('GLUE_JOB')
     destination_bucket = os.getenv('DEST_BUCKET')
     destination_key = os.getenv('DEST_KEY')
 
@@ -23,5 +23,5 @@ def handler(event, context):
         '--destination_key': destination_key,
     }
     print('args for glue job: {}'.format(args))
-    result = boto3.client('glue').start_job_run(JobName=job_name, Arguments=args)
+    result = boto3.client('glue').start_job_run(JobName=glue_job, Arguments=args)
     return result

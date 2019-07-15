@@ -33,7 +33,7 @@ functions:
     environment:
         DEST_BUCKET: ${self:custom.bucket}
         DEST_KEY: unzip/
-        JOB_NAME: unzip-${self:provider.stage}
+        GLUE_JOB: unzip-${self:provider.stage}
   extract:
     handler: lambda/extract.handler
     events:
