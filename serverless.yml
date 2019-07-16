@@ -5,6 +5,7 @@ provider:
   region: eu-central-1
   runtime: python3.7
   stage: ${opt:stage}
+  # add your own lambda role here
   role: arn:aws:iam::077590795309:role/serverless-data-pipeline-lambda
 
 plugins:
@@ -16,6 +17,7 @@ custom:
   glue_crawler: load-${self:provider.stage}
   glue_job: unzip-${self:provider.stage}
   glue_job_script_location: s3://${self:custom.bucket_glue_scripts}/unzip.py
+  # add your own glue role here
   glue_role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
   athena_db: ${self:custom.bucket}
   remover:
