@@ -6,7 +6,7 @@ provider:
   runtime: python3.7
   stage: ${opt:stage}
   # add your own lambda role here
-  role: arn:aws:iam::077590795309:role/serverless-data-pipeline-lambda
+  role: <YOUR_LAMBDA_ROLE_ARN_MUST_COME_HERE>
 
 plugins:
   - serverless-s3-remover
@@ -18,7 +18,7 @@ custom:
   glue_job: unzip-${self:provider.stage}
   glue_job_script_location: s3://${self:custom.bucket_glue_scripts}/unzip.py
   # add your own glue role here
-  glue_role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
+  glue_role: <YOUR_GLUE_ROLE_ARN_MUST_COME_HERE>
   athena_db: ${self:custom.bucket}
   remover:
     buckets:
