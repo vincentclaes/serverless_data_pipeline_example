@@ -1,6 +1,6 @@
 # SERVERLESS-DATA-PIPELINE
 
-Build and Deploy A Serverless Data Pipeline on AWS Using AWS Cloud Services Lambda, S3, Glue and Athena we are going to build a data pipeline written in python and deploy it using the Serverless Framework.
+Using AWS Cloud Services Lambda, S3, Glue and Athena we are going to build a data pipeline written in python and deploy it using the Serverless Framework.
 
 You can read the tutorial here: https://medium.com/@vincentclaes_43752/build-a-serverless-data-pipeline-on-aws-7c7d498d9707
 
