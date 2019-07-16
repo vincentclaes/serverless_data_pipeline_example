@@ -14,6 +14,7 @@ custom:
   bucket: ${self:service}-${self:provider.stage}
   bucket_glue_scripts: ${self:custom.bucket}-glue-scripts
   glue_crawler: ${self:custom.bucket}-glue-crawler
+  glue_job: unzip-${self:provider.stage}
   glue_role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
   athena_db: ${self:custom.bucket}
   remover:
@@ -34,7 +35,7 @@ functions:
     environment:
         DEST_BUCKET: ${self:custom.bucket}
         DEST_KEY: unzip/
-        GLUE_JOB: unzip-${self:provider.stage}
+        GLUE_JOB: ${self:custom.glue_job}
 
   extract:
     handler: lambda/extract.handler

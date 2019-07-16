@@ -8,11 +8,17 @@ from awsglue.utils import getResolvedOptions
 
 def main():
     """
-    get the sources via the arguments that are passed to the glue job,
-    get the zip file from s3, unzip and dump the result to s3.
+    get the sources via the arguments that
+    are passed to the glue job,
+    get the zip file from s3, unzip
+    and dump the result to s3.
     """
+    # get arguments that are passes to the glue job
     args = getResolvedOptions(sys.argv, ['source_bucket',
-                                         'source_key', 'destination_bucket', 'destination_key'])
+                                         'source_key',
+                                         'destination_bucket',
+                                         'destination_key'])
+
     print('args parsed : {}'.format(args))
 
     source_bucket = args["source_bucket"]
@@ -21,8 +27,10 @@ def main():
     destination_key = args["destination_key"]
 
     # get zip file from s3
-    s3_object = boto3.resource('s3').Object(bucket_name=source_bucket, key=source_key)
-    zip_file_byte_object = io.BytesIO(s3_object.get()["Body"].read())
+    s3_object = boto3.resource('s3')\
+        .Object(bucket_name=source_bucket, key=source_key)
+    zip_file_byte_object = io.BytesIO(
+                            s3_object.get()["Body"].read())
     zip_file = zipfile.ZipFile(zip_file_byte_object)
     name_list = zip_file.namelist()
     ret_val = []
@@ -35,7 +43,8 @@ def main():
         full_destination_key = destination_key + email_path
         print('uploading object to {}'.format(full_destination_key))
         boto3.client('s3').upload_fileobj(email_byte_object,
-                                          destination_bucket, full_destination_key)
+                                          destination_bucket,
+                                          full_destination_key)
         email.close()
         ret_val.append(full_destination_key)
 
