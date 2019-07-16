@@ -13,8 +13,9 @@ plugins:
 custom:
   bucket: ${self:service}-${self:provider.stage}
   bucket_glue_scripts: ${self:custom.bucket}-glue-scripts
-  glue_crawler: ${self:custom.bucket}-glue-crawler
+  glue_crawler: load-${self:provider.stage}
   glue_job: unzip-${self:provider.stage}
+  glue_job_script_location: s3://${self:custom.bucket_glue_scripts}/unzip.py
   glue_role: arn:aws:iam::077590795309:role/serverless-data-pipeline-glue
   athena_db: ${self:custom.bucket}
   remover:
@@ -70,7 +71,7 @@ resources:
         Role: ${self:custom.glue_role}
         Command:   
           Name: pythonshell  
-          ScriptLocation: s3://${self:custom.bucket_glue_scripts}/unzip.py
+          ScriptLocation: ${self:custom.glue_job_script_location}
         Name: unzip-${self:provider.stage}
 
     S3GlueScripts:
