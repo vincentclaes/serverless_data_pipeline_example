@@ -31,6 +31,9 @@ There is a comment above both roles that indicates that you should replace the A
 
 ### configure your local environment
 
+    git clone https://github.com/vincentclaes/serverless_data_pipeline_example.git
+    cd serverless_data_pipeline_example
+
 under the root of this project execute:
 
     export AWS_PROFILE="serverless"
