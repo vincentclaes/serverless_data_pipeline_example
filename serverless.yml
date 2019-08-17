@@ -74,7 +74,7 @@ resources:
         Command:   
           Name: pythonshell  
           ScriptLocation: ${self:custom.glue_job_script_location}
-        Name: unzip-${self:provider.stage}
+        Name: ${self:custom.glue_job}
 
     S3GlueScripts:
       Type: AWS::S3::Bucket
