@@ -12,7 +12,7 @@ def handler(event, context):
     put the resulting object back to s3.
     """
     # get the source key and bucket from
-    # the event that triggered this lambda function.
+    # the event that triggered this lambda_function function.
     source_key = event['Records'][0]['s3']['object']['key']
     source_bucket = event['Records'][0]['s3']['bucket']['name']
 

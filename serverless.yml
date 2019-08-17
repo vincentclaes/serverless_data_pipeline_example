@@ -5,7 +5,7 @@ provider:
   region: eu-central-1
   runtime: python3.7
   stage: ${opt:stage}
-  # add your own lambda role ARN here
+  # add your own lambda_function role ARN here
   role: <YOUR_LAMBDA_ROLE_ARN_MUST_COME_HERE>
 
 plugins:
@@ -27,7 +27,7 @@ custom:
 
 functions:
   unzip:
-    handler: lambda/unzip.handler
+    handler: lambda_function/unzip.handler
     events:
       - s3:
           bucket: ${self:custom.bucket}
@@ -41,7 +41,7 @@ functions:
         GLUE_JOB: ${self:custom.glue_job}
 
   extract:
-    handler: lambda/extract.handler
+    handler: lambda_function/extract.handler
     events:
       - s3:
           bucket: ${self:custom.bucket}
@@ -54,7 +54,7 @@ functions:
         DEST_KEY: extract/
 
   load:
-    handler: lambda/load.handler
+    handler: lambda_function/load.handler
     events:
       - s3:
           bucket: ${self:custom.bucket}
