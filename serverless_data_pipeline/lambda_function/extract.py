@@ -36,6 +36,7 @@ def handler(event, context):
     s3_client.put_object(Body=email_object,
                          Bucket=destination_bucket,
                          Key=full_s3_key)
+    return full_s3_key
 
 
 def get_address_from_email(email_object, field):
