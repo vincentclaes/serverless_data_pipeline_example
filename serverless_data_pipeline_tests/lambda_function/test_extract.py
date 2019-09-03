@@ -13,7 +13,8 @@ class TestExtract(unittest.TestCase):
     DESTINATION_BUCKET = "destination_bucket"
     DESTINATION_KEY = "s3/key/"
 
-    def setup_test_environment(self):
+    @staticmethod
+    def setup_test_environment():
         os.environ["DEST_KEY"] = TestExtract.DESTINATION_KEY
         os.environ["DEST_BUCKET"] = TestExtract.DESTINATION_BUCKET
 
@@ -21,7 +22,8 @@ class TestExtract(unittest.TestCase):
         conn.create_bucket(Bucket=TestExtract.SOURCE_BUCKET)
         conn.create_bucket(Bucket=TestExtract.DESTINATION_BUCKET)
 
-    def get_s3_event(self, bucket, key):
+    @staticmethod
+    def get_s3_event(bucket, key):
         return {
             "Records": [
                 {
@@ -31,18 +33,18 @@ class TestExtract(unittest.TestCase):
                     "eventTime": "2016-09-25T05:15:44.261Z",
                     "eventName": "ObjectCreated:Put",
                     "userIdentity": {
-                        "principalId": "AWS:AROAW5CA2KAGZPAWYRL7K:cli"
+                        "principalId": "AWS:AROAW5C"
                     },
                     "requestParameters": {
                         "sourceIPAddress": "222.24.107.21"
                     },
                     "responseElements": {
                         "x-amz-request-id": "00093EEAA5C7G7F2",
-                        "x-amz-id-2": "9tTklyI/OEj4mco12PgsNksgxAV3KePn7WlNSq2rs+LXD3xFG0tlzgvtH8hClZzI963KYJgVnXw="
+                        "x-amz-id-2": "9tTklyI/OEj"
                     },
                     "s3": {
                         "s3SchemaVersion": "1.0",
-                        "configurationId": "151dfa64-d57a-4383-85ac-620bce65f269",
+                        "configurationId": "151dfa64",
                         "bucket": {
                             "name": bucket,
                             "ownerIdentity": {
@@ -53,7 +55,7 @@ class TestExtract(unittest.TestCase):
                         "object": {
                             "key": key,
                             "size": 11,
-                            "eTag": "5eb63bbbe01eetd093cb22bb8f5acdc3",
+                            "eTag": "5eb63bbb",
                             "sequencer": "0057E75D80IA35C3E0"
                         }
                     }
@@ -62,12 +64,13 @@ class TestExtract(unittest.TestCase):
         }
 
     @staticmethod
-    def read_object_bytewise(file_name, dir_path, resources='resources'):
-        return open(os.path.join(dir_path, resources, file_name), 'rb')
+    def read_object_bytewise(path):
+        return open(path, 'rb')
 
     @staticmethod
     def put_data_to_s3_object(object_, bucket, s3_source_key):
-        boto3.client('s3').put_object(Body=object_, Bucket=bucket, Key=s3_source_key)
+        boto3.client('s3').put_object(Body=object_,
+                                      Bucket=bucket, Key=s3_source_key)
 
     @staticmethod
     def get_s3_object(bucket, key):
@@ -75,24 +78,36 @@ class TestExtract(unittest.TestCase):
 
     @staticmethod
     def read_s3_object(bucket, key):
-        """Return a file object as a byte stream."""
         object_ = TestExtract.get_s3_object(bucket, key)
         return object_['Body'].read()
 
+    def put_email_to_s3(self, test_email_path, email_name):
+        with self.read_object_bytewise(test_email_path) as email_object:
+            self.put_data_to_s3_object(email_object,
+                                       TestExtract.SOURCE_BUCKET, email_name)
+
     @mock_s3
     def test_extract_the_contents_of_an_email_successfully(self):
+        # arrange
         self.setup_test_environment()
+
         email_name = 'test_extract_the_contents_of_an_email_successfully.eml'
-        email_object = self.read_object_bytewise(email_name, self.DIR_PATH)
-        self.put_data_to_s3_object(email_object, TestExtract.SOURCE_BUCKET, email_name)
+        test_email_path = os.path.join(self.DIR_PATH, 'resources', email_name)
+        self.put_email_to_s3(test_email_path, email_name)
 
         event = self.get_s3_event(TestExtract.SOURCE_BUCKET, email_name)
+
+        # act
         s3_key_extracted_message = extract.handler(event, None)
 
+        # assert
         email_as_json = self.read_s3_object(TestExtract.DESTINATION_BUCKET, s3_key_extracted_message)
-        expected_json = {'id': 'test_extract_the_contents_of_an_email_successfully.eml', 'from': 'vclaes1986@gmail.com',
-                         'to': 'vincent.v.claes@gmail.com', 'cc': '', 'subject': 'Hey how are you doing',
-                         'date': '2019-07-09 13:42:54+02:00', 'body': '\nCash Me Outside How Bout Dah'}
+        expected_json = {'id': 'test_extract_the_contents_of_an_email_successfully.eml',
+                         'from': 'vclaes1986@gmail.com',
+                         'to': 'vincent.v.claes@gmail.com',
+                         'cc': '', 'subject': 'Hey how are you doing',
+                         'date': '2019-07-09 13:42:54+02:00',
+                         'body': '\nCash Me Outside How Bout Dah'}
         self.assertDictEqual(json.loads(email_as_json), expected_json)
 
 

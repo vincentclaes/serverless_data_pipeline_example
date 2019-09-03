@@ -16,23 +16,23 @@ def handler(event, context):
     source_key = event['Records'][0]['s3']['object']['key']
     source_bucket = event['Records'][0]['s3']['bucket']['name']
 
+    # get the email name from the key
+    email_name = source_key.split('/')[-1]
+
+    # get email from s3,
+    s3_client = boto3.client('s3')
+    s3_object = s3_client.get_object(Bucket=source_bucket,
+                                     Key=source_key)["Body"].read()
+    # extract the contents
+    email_object = extract_contents(s3_object, email_name)
+
     # get the destination key and bucket
     # from the environment variables
     destination_bucket = os.getenv('DEST_BUCKET')
     destination_key = os.getenv('DEST_KEY')
-
-    # get the email name from the key
-    email_name = source_key.split('/')[-1]
-
-    # get email from s3, extract the contents
-    # and dump the result back to s3
-    s3_client = boto3.client('s3')
-    s3_object = s3_client.get_object(Bucket=source_bucket,
-                                     Key=source_key)["Body"].read()
-
-    email_object = extract_contents(s3_object, email_name)
-
     full_s3_key = destination_key + email_name + '.json'
+
+    # dump the result back to s3
     s3_client.put_object(Body=email_object,
                          Bucket=destination_bucket,
                          Key=full_s3_key)
