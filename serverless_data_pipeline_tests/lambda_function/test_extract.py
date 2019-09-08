@@ -6,21 +6,37 @@ import boto3
 import json
 
 
+@mock_s3
 class TestExtract(unittest.TestCase):
     DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
     SOURCE_BUCKET = "source_bucket"
-    DESTINATION_BUCKET = "destination_bucket"
-    DESTINATION_KEY = "s3/key/"
+    DEST_BUCKET = "destination_bucket"
+    DEST_KEY = "s3/key/"
 
-    @staticmethod
-    def setup_test_environment():
-        os.environ["DEST_KEY"] = TestExtract.DESTINATION_KEY
-        os.environ["DEST_BUCKET"] = TestExtract.DESTINATION_BUCKET
+    ENV_DEST_KEY = "DEST_KEY"
+    ENV_DEST_BUCKET = "DEST_BUCKET"
+
+    def setUp(self):
+        os.environ[TestExtract.ENV_DEST_KEY] = TestExtract.DEST_KEY
+        os.environ[TestExtract.ENV_DEST_BUCKET] = TestExtract.DEST_BUCKET
 
         conn = boto3.resource('s3')
         conn.create_bucket(Bucket=TestExtract.SOURCE_BUCKET)
-        conn.create_bucket(Bucket=TestExtract.DESTINATION_BUCKET)
+        conn.create_bucket(Bucket=TestExtract.DEST_BUCKET)
+
+    def tearDown(self):
+        del os.environ[TestExtract.ENV_DEST_KEY]
+        del os.environ[TestExtract.ENV_DEST_BUCKET]
+
+        self.remove_bucket(TestExtract.SOURCE_BUCKET)
+        self.remove_bucket(TestExtract.DEST_BUCKET)
+
+    @staticmethod
+    def remove_bucket(bucket_name):
+        s3_bucket = boto3.resource('s3').Bucket(bucket_name)
+        s3_bucket.objects.all().delete()
+        s3_bucket.delete()
 
     @staticmethod
     def get_s3_event(bucket, key):
@@ -86,11 +102,8 @@ class TestExtract(unittest.TestCase):
             self.put_data_to_s3_object(email_object,
                                        TestExtract.SOURCE_BUCKET, email_name)
 
-    @mock_s3
     def test_extract_the_contents_of_an_email_successfully(self):
         # arrange
-        self.setup_test_environment()
-
         email_name = 'test_extract_the_contents_of_an_email_successfully.eml'
         test_email_path = os.path.join(self.DIR_PATH, 'resources', email_name)
         self.put_email_to_s3(test_email_path, email_name)
@@ -101,7 +114,7 @@ class TestExtract(unittest.TestCase):
         s3_key_extracted_message = extract.handler(event, None)
 
         # assert
-        email_as_json = self.read_s3_object(TestExtract.DESTINATION_BUCKET, s3_key_extracted_message)
+        email_as_json = self.read_s3_object(TestExtract.DEST_BUCKET, s3_key_extracted_message)
         expected_json = {'id': 'test_extract_the_contents_of_an_email_successfully.eml',
                          'from': 'vclaes1986@gmail.com',
                          'to': 'vincent.v.claes@gmail.com',
