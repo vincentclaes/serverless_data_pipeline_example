@@ -26,6 +26,5 @@ def handler(event, context):
     }
     print('args for glue job: {}'.format(args))
 
-    result = boto3.client('glue')\
+    return boto3.client('glue')\
         .start_job_run(JobName=glue_job, Arguments=args)
-    return result
